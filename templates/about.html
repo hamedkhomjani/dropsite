@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="{{ lang or 'fa' }}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{% if lang == 'en' %}About DropLab{% elif lang == 'sv' %}Om DropLab{% else %}درباره DropLab{% endif %}
+    </title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+    <style>
+        .about-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .about-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 30px;
+            border: 1px solid rgba(255, 85, 0, 0.2);
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            color: var(--text-color);
+        }
+
+        .about-card.full-width {
+            grid-column: span 2;
+            text-align: center;
+        }
+
+        .about-card::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            width: 20px;
+            height: 20px;
+            border-top: 4px solid var(--primary-color);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .about-card::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            right: -1px;
+            width: 20px;
+            height: 20px;
+            border-bottom: 4px solid var(--primary-color);
+            border-right: 4px solid var(--primary-color);
+        }
+
+        .feature-icon {
+            font-size: 32px;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        h2 {
+            margin-top: 0;
+            font-size: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .about-container {
+                grid-template-columns: 1fr;
+            }
+
+            .about-card.full-width {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main-content" style="display: block; overflow-y: auto;">
+        <nav class="navbar">
+            <div class="nav-container">
+                <a href="{{ url_for('home', lang=lang) }}" class="logo">{{ t.hero_title }}</a>
+                <div class="nav-links">
+                    <a href="{{ url_for('home', lang=lang) }}">{{ t.nav_home }}</a>
+                    <a href="{{ url_for('about', lang=lang) }}" style="color: var(--primary-color);">{{ t.nav_about
+                        }}</a>
+                    <a href="{{ url_for('contact', lang=lang) }}">{{ t.footer_contact }}</a>
+                    <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle Theme">
+                        <svg id="sun-icon" class="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                        <svg id="moon-icon" class="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </button>
+                    <div class="dropdown">
+                        <button class="dropbtn">
+                            {% if lang == 'en' %}🇺🇸 English{% elif lang == 'sv' %}🇸🇪 Svenska{% else %}🇮🇷 فارسی{%
+                            endif %}
+                            ▼
+                        </button>
+                        <div class="dropdown-content">
+                            <a href="{{ url_for('about', lang='fa') }}">{{ t.lang_fa }}</a>
+                            <a href="{{ url_for('about', lang='en') }}">{{ t.lang_en }}</a>
+                            <a href="{{ url_for('about', lang='sv') }}">{{ t.lang_sv }}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="about-container">
+            <div class="about-card full-width">
+                <h1>{{ t.about_welcome }}</h1>
+                <p>{{ t.about_welcome_desc }}</p>
+            </div>
+
+            <div class="about-card">
+                <span class="feature-icon">🚀</span>
+                <h2>{{ t.feature_fast }}</h2>
+                <p>{{ t.feature_fast_desc }}</p>
+            </div>
+
+            <div class="about-card">
+                <span class="feature-icon">🔒</span>
+                <h2>{{ t.feature_secure }}</h2>
+                <p>{{ t.feature_secure_desc }}</p>
+            </div>
+
+            <div class="about-card">
+                <span class="feature-icon">⏳</span>
+                <h2>{{ t.feature_retention }}</h2>
+                <p>{{ t.feature_retention_desc }}</p>
+            </div>
+
+            <div class="about-card">
+                <span class="feature-icon">💻</span>
+                <h2>{{ t.feature_opensource }}</h2>
+                <p>{{ t.feature_opensource_desc }}</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p>
+                {{ t.footer_rights }}
+            </p>
+            <div class="footer-links">
+                <a href="{{ url_for('about', lang=lang) }}">{{ t.nav_about }}</a>
+                <a href="{{ url_for('contact', lang=lang) }}">{{ t.footer_contact }}</a>
+                <a href="{{ url_for('privacy', lang=lang) }}">{{ t.footer_privacy }}</a>
+            </div>
+            <div>
+                <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js"
+                    data-name="bmc-button" data-slug="hamedkhomjani" data-color="#FFDD00" data-emoji=""
+                    data-font="Cookie" data-text="Buy me a coffee" data-outline-color="#000000"
+                    data-font-color="#000000" data-coffee-color="#ffffff">
+                    </script>
+            </div>
+        </div>
+    </footer>
+    <script src="/static/bg.js"></script>
+</body>
+
+</html>

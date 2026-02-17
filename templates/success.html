@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="{{ lang or 'fa' }}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{ t.title_success }}</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+</head>
+
+<body>
+
+    <div class="main-content">
+        <nav class="navbar">
+            <div class="nav-container">
+                <a href="{{ url_for('home', lang=lang) }}" class="logo">{{ t.hero_title }}</a>
+                <div class="nav-links">
+                    <a href="{{ url_for('home', lang=lang) }}">{{ t.nav_home }}</a>
+                    <a href="{{ url_for('about', lang=lang) }}">{{ t.nav_about }}</a>
+                    <a href="{{ url_for('contact', lang=lang) }}">{{ t.footer_contact }}</a>
+                    <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle Theme">
+                        <svg id="sun-icon" class="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                        <svg id="moon-icon" class="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </button>
+                    <div class="dropdown">
+                        <button class="dropbtn">
+                            {% if lang == 'en' %}🇺🇸 English{% elif lang == 'sv' %}🇸🇪 Svenska{% else %}🇮🇷 فارسی{%
+                            endif %}
+                            ▼
+                        </button>
+                        <div class="dropdown-content">
+                            <a href="{{ url_for('success', file_id=file_id, lang='fa') }}">{{ t.lang_fa }}</a>
+                            <a href="{{ url_for('success', file_id=file_id, lang='en') }}">{{ t.lang_en }}</a>
+                            <a href="{{ url_for('success', file_id=file_id, lang='sv') }}">{{ t.lang_sv }}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="card">
+            <h1>{{ t.success_ready }}</h1>
+            <p>{{ t.success_time }}
+                <span id="timer" data-days="{{ days }}" data-hours="{{ hours }}" data-minutes="{{ minutes }}"
+                    data-seconds="{{ seconds }}">
+                    {{ days }} <span id="day-text">{{ t.time_days }}</span> {{ hours }}:{{ minutes }}:{{ seconds }}
+                </span>
+            </p>
+            <p style="color: var(--primary-color); font-weight: 600;">
+                {{ t.link_once }}
+            </p>
+
+            <div class="link-box">
+                <input type="text" value="{{ link }}" id="link" readonly>
+                <button id="share-btn" onclick="share()">
+                    {{ t.btn_share }}
+                </button>
+                <button onclick="copy()">
+                    {{ t.btn_copy }}
+                </button>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <a href="{{ url_for('home', lang=lang) }}">
+                    <button style="background-color: var(--text-color); width: 100%;">{{ t.btn_send_another }}</button>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p>
+                {{ t.footer_rights }}
+            </p>
+            <div class="footer-links">
+                <a href="{{ url_for('about', lang=lang) }}">{{ t.nav_about }}</a>
+                <a href="{{ url_for('contact', lang=lang) }}">{{ t.footer_contact }}</a>
+                <a href="{{ url_for('privacy', lang=lang) }}">{{ t.footer_privacy }}</a>
+            </div>
+            <div>
+                <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js"
+                    data-name="bmc-button" data-slug="hamedkhomjani" data-color="#FFDD00" data-emoji=""
+                    data-font="Cookie" data-text="Buy me a coffee" data-outline-color="#000000"
+                    data-font-color="#000000" data-coffee-color="#ffffff">
+                    </script>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        (function () {
+            var timerEl = document.getElementById("timer");
+            var seconds = parseInt(timerEl.dataset.seconds, 10);
+            var minutes = parseInt(timerEl.dataset.minutes, 10);
+            var hours = parseInt(timerEl.dataset.hours, 10);
+            var days = parseInt(timerEl.dataset.days, 10);
+            var lang = '{{ lang or "fa" }}';
+
+            function pad(n) { return n < 10 ? '0' + n : n; }
+
+            function updateTimer() {
+                if (seconds > 0) {
+                    seconds--;
+                } else {
+                    if (minutes > 0) {
+                        minutes--;
+                        seconds = 59;
+                    } else {
+                        if (hours > 0) {
+                            hours--;
+                            minutes = 59;
+                            seconds = 59;
+                        } else {
+                            if (days > 0) {
+                                days--;
+                                hours = 23;
+                                minutes = 59;
+                                seconds = 59;
+                            } else {
+                                seconds = 0;
+                                minutes = 0;
+                                hours = 0;
+                                days = 0;
+                            }
+                        }
+                    }
+                }
+                if (lang === 'en') {
+                    var dayText = days === 1 ? '{{ t.time_day }}' : '{{ t.time_days }}';
+                    timerEl.innerText = days + " " + dayText + " " + pad(hours) + ":" + pad(minutes) + ":" + pad(seconds);
+                } else if (lang === 'sv') {
+                    var dayText = days === 1 ? '{{ t.time_day }}' : '{{ t.time_days }}';
+                    timerEl.innerText = days + " " + dayText + " " + pad(hours) + ":" + pad(minutes) + ":" + pad(seconds);
+                } else {
+                    timerEl.innerText = days + " {{ t.time_days }} " + pad(hours) + ":" + pad(minutes) + ":" + pad(seconds);
+                }
+            }
+
+            setInterval(updateTimer, 1000);
+
+            window.copy = function () {
+                const i = document.getElementById("link");
+                i.select();
+                document.execCommand("copy");
+                alert("{{ t.alert_copied }}");
+            };
+
+            window.share = function () {
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'DropLab File',
+                        text: 'File link:',
+                        url: document.getElementById("link").value
+                    })
+                        .catch((error) => console.log('Error sharing', error));
+                } else {
+                    // Fallback
+                    window.copy();
+                    alert("{{ t.alert_share_fail }}");
+                }
+            };
+        })();
+    </script>
+    <script src="/static/bg.js"></script>
+</body>
+
+</html>

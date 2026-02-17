@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="{{ lang or 'fa' }}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{ t.title_privacy }}</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+    <style>
+        .privacy-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .privacy-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 30px;
+            border: 1px solid var(--border-color);
+            position: relative;
+            box-shadow: var(--card-shadow);
+            color: var(--text-color);
+            text-align: left;
+        }
+
+        [lang="fa"] .privacy-card {
+            text-align: right;
+            direction: rtl;
+        }
+
+        .privacy-card::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            width: 20px;
+            height: 20px;
+            border-top: 4px solid var(--primary-color);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .privacy-card::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            right: -1px;
+            width: 20px;
+            height: 20px;
+            border-bottom: 4px solid var(--primary-color);
+            border-right: 4px solid var(--primary-color);
+        }
+
+        h1,
+        h2 {
+            font-family: 'Chakra Petch', sans-serif;
+            text-transform: uppercase;
+            color: var(--primary-color);
+        }
+
+        h2 {
+            font-size: 20px;
+            margin-top: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        p {
+            line-height: 1.6;
+            color: var(--text-color);
+            margin-bottom: 15px;
+        }
+
+        .privacy-icon {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+
+        [lang="fa"] .privacy-icon {
+            margin-right: 0;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main-content" style="display: block; overflow-y: auto;">
+        <nav class="navbar">
+            <div class="nav-container">
+                <a href="{{ url_for('home', lang=lang) }}" class="logo">{{ t.hero_title }}</a>
+                <div class="nav-links">
+                    <a href="{{ url_for('home', lang=lang) }}">{{ t.nav_home }}</a>
+                    <a href="{{ url_for('about', lang=lang) }}">{{ t.nav_about }}</a>
+                    <a href="{{ url_for('contact', lang=lang) }}">{{ t.footer_contact }}</a>
+                    <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle Theme">
+                        <svg id="sun-icon" class="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                        <svg id="moon-icon" class="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </button>
+                    <div class="dropdown">
+                        <button class="dropbtn">
+                            {% if lang == 'en' %}🇺🇸 English{% elif lang == 'sv' %}🇸🇪 Svenska{% else %}🇮🇷 فارسی{%
+                            endif %}
+                            ▼
+                        </button>
+                        <div class="dropdown-content">
+                            <a href="{{ url_for('privacy', lang='fa') }}">{{ t.lang_fa }}</a>
+                            <a href="{{ url_for('privacy', lang='en') }}">{{ t.lang_en }}</a>
+                            <a href="{{ url_for('privacy', lang='sv') }}">{{ t.lang_sv }}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="privacy-container" style="margin-top: 40px;">
+            <div class="privacy-card">
+                <h1>{{ t.privacy_title }}</h1>
+                <p>{{ t.privacy_intro }}</p>
+
+                <h2><span class="privacy-icon">🛡️</span>{{ t.privacy_data_collection }}</h2>
+                <p>{{ t.privacy_data_collection_desc }}</p>
+
+                <h2><span class="privacy-icon">💾</span>{{ t.privacy_file_storage }}</h2>
+                <p>{{ t.privacy_file_storage_desc }}</p>
+
+                <h2><span class="privacy-icon">🔒</span>{{ t.privacy_security }}</h2>
+                <p>{{ t.privacy_security_desc }}</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p>
+                {{ t.footer_rights }}
+            </p>
+            <div class="footer-links">
+                <a href="{{ url_for('about', lang=lang) }}">{{ t.nav_about }}</a>
+                <a href="{{ url_for('contact', lang=lang) }}">{{ t.footer_contact }}</a>
+                <a href="{{ url_for('privacy', lang=lang) }}">{{ t.footer_privacy }}</a>
+            </div>
+            <div>
+                <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js"
+                    data-name="bmc-button" data-slug="hamedkhomjani" data-color="#FFDD00" data-emoji=""
+                    data-font="Cookie" data-text="Buy me a coffee" data-outline-color="#000000"
+                    data-font-color="#000000" data-coffee-color="#ffffff">
+                    </script>
+            </div>
+        </div>
+    </footer>
+    <script src="/static/bg.js"></script>
+</body>
+
+</html>

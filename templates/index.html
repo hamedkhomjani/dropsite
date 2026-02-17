@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="{{ lang or 'fa' }}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{ t.title_home }}</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+</head>
+
+<body>
+
+    <div class="main-content">
+        <nav class="navbar">
+            <div class="nav-container">
+                <a href="{{ url_for('home', lang=lang) }}" class="logo">{{ t.hero_title }}</a>
+                <div class="nav-links">
+                    <a href="{{ url_for('home', lang=lang) }}">{{ t.nav_home }}</a>
+                    <a href="{{ url_for('about', lang=lang) }}" style="color: var(--primary-color);">{{ t.nav_about
+                        }}</a>
+                    <a href="{{ url_for('contact', lang=lang) }}">{{ t.footer_contact }}</a>
+                    <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle Theme">
+                        <svg id="sun-icon" class="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                        <svg id="moon-icon" class="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </button>
+                    <div class="dropdown">
+                        <button class="dropbtn">
+                            {% if lang == 'en' %}🇺🇸 English{% elif lang == 'sv' %}🇸🇪 Svenska{% else %}🇮🇷 فارسی{%
+                            endif %}
+                            ▼
+                        </button>
+                        <div class="dropdown-content">
+                            <a href="{{ url_for('home', lang='fa') }}">{{ t.lang_fa }}</a>
+                            <a href="{{ url_for('home', lang='en') }}">{{ t.lang_en }}</a>
+                            <a href="{{ url_for('home', lang='sv') }}">{{ t.lang_sv }}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="card animate-fade-in">
+            <h1>{{ t.hero_title }}</h1>
+            <p class="animate-fade-in animate-delay-1">{{ t.hero_subtitle }} <span
+                    style="color:red; font-weight:bold;">{{ t.free }}</span></p>
+
+            <form id="upload-form" action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data"
+                class="animate-fade-in animate-delay-2">
+                <div class="file-upload-area" id="file-upload-area">
+                    <input type="file" name="file" id="file-input" required style="display: none;">
+                    <div class="upload-content">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" style="margin-bottom: 10px;">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <p id="upload-text">
+                            <strong>{{ t.upload_click }}</strong> {{ t.upload_drag }}
+                        </p>
+                        <p id="file-name" style="display: none; margin-top: 8px; color: #007bff; font-weight: bold;">
+                        </p>
+                    </div>
+                </div>
+                <button type="submit" id="upload-btn" style="margin-top: 15px; width: 100%;" disabled>
+                    {{ t.btn_select }}
+                </button>
+
+                <div id="progress-wrapper" class="progress-wrapper">
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progress-bar"></div>
+                    </div>
+                    <div class="progress-status" id="progress-status">0%</div>
+                </div>
+            </form>
+
+            <hr style="margin:20px 0;">
+
+            <div class="animate-fade-in animate-delay-3">
+                <h3>{{ t.download_head }}</h3>
+                <p>{{ t.download_desc }}</p>
+
+                <form id="download-form" action="{{ url_for('download_manual') }}" method="post">
+                    <input type="text" name="file_link" id="file-link-input" placeholder="{{ t.placeholder_link }}"
+                        required style="width:80%">
+                    <button type="submit" id="download-btn" disabled>
+                        {{ t.btn_enter_link }}
+                    </button>
+                </form>
+            </div>
+
+            <div id="manual-download" style="display:none; margin-top:15px;"></div>
+
+            <hr style="margin:20px 0;">
+
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p>
+                {{ t.footer_rights }}
+            </p>
+            <div class="footer-links">
+                <a href="{{ url_for('about', lang=lang) }}">{{ t.nav_about }}</a>
+                <a href="{{ url_for('contact', lang=lang) }}">{{ t.footer_contact }}</a>
+                <a href="{{ url_for('privacy', lang=lang) }}">{{ t.footer_privacy }}</a>
+            </div>
+            <div>
+                <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js"
+                    data-name="bmc-button" data-slug="hamedkhomjani" data-color="#FFDD00" data-emoji=""
+                    data-font="Cookie" data-text="Buy me a coffee" data-outline-color="#000000"
+                    data-font-color="#000000" data-coffee-color="#ffffff">
+                    </script>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        (function () {
+            const fileInput = document.getElementById('file-input');
+            const fileUploadArea = document.getElementById('file-upload-area');
+            const uploadText = document.getElementById('upload-text');
+            const fileName = document.getElementById('file-name');
+            const uploadBtn = document.getElementById('upload-btn');
+            const lang = '{{ lang or "fa" }}';
+
+            function updateButtonText(fileName) {
+                if (fileName) {
+                    uploadBtn.textContent = '{{ t.js_upload_btn_file }}';
+                    uploadBtn.disabled = false;
+                    uploadBtn.style.opacity = '1';
+                    uploadBtn.style.cursor = 'pointer';
+                } else {
+                    uploadBtn.textContent = '{{ t.js_upload_btn_default }}';
+                    uploadBtn.disabled = true;
+                    uploadBtn.style.opacity = '0.6';
+                    uploadBtn.style.cursor = 'not-allowed';
+                }
+            }
+
+            // Click to select file
+            fileUploadArea.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            // File selected
+            fileInput.addEventListener('change', function (e) {
+                if (this.files && this.files[0]) {
+                    const name = this.files[0].name;
+                    const size = (this.files[0].size / 1024 / 1024).toFixed(2); // MB
+                    const ext = name.split('.').pop().toLowerCase();
+                    const forbidden = ['exe', 'bat', 'cmd', 'sh', 'vbs', 'ps1', 'msi', 'jar', 'scr', 'com', 'pif'];
+
+                    if (forbidden.includes(ext)) {
+                        fileName.textContent = `${name} (${size} MB) - {{ t.error_security_type }} ❌`;
+                        fileName.style.display = 'block';
+                        fileName.style.color = 'red';
+                        fileUploadArea.style.borderColor = '#dc3545'; // Red border
+                        fileUploadArea.style.backgroundColor = '#ffe6e6'; // Light red bg
+                        uploadBtn.disabled = true;
+                        uploadBtn.style.opacity = '0.6';
+                        uploadBtn.style.cursor = 'not-allowed';
+                    } else {
+                        fileName.textContent = `${name} (${size} MB) ✅`;
+                        fileName.style.display = 'block';
+                        fileName.style.color = 'green';
+                        fileUploadArea.style.borderColor = '#28a745'; // Green border
+                        fileUploadArea.style.backgroundColor = '#e6ffec'; // Light green bg
+                        updateButtonText(name);
+                    }
+                } else {
+                    fileName.style.display = 'none';
+                    updateButtonText(null);
+                }
+            });
+
+            // Drag and drop
+            fileUploadArea.addEventListener('dragover', function (e) {
+                e.preventDefault();
+                fileUploadArea.classList.add('active');
+                fileUploadArea.style.borderColor = '#007bff';
+                fileUploadArea.style.backgroundColor = '#e7f3ff';
+            });
+
+            fileUploadArea.addEventListener('dragleave', function (e) {
+                e.preventDefault();
+                fileUploadArea.classList.remove('active');
+                if (!fileInput.files || !fileInput.files[0]) {
+                    fileUploadArea.style.borderColor = '#ddd';
+                    fileUploadArea.style.backgroundColor = '#f9f9f9';
+                }
+            });
+
+            fileUploadArea.addEventListener('drop', function (e) {
+                e.preventDefault();
+                fileUploadArea.classList.remove('active');
+
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                    fileInput.files = e.dataTransfer.files;
+                    const name = e.dataTransfer.files[0].name;
+                    const size = (e.dataTransfer.files[0].size / 1024 / 1024).toFixed(2); // MB
+                    const ext = name.split('.').pop().toLowerCase();
+                    const forbidden = ['exe', 'bat', 'cmd', 'sh', 'vbs', 'ps1', 'msi', 'jar', 'scr', 'com', 'pif'];
+
+                    if (forbidden.includes(ext)) {
+                        fileName.textContent = `${name} (${size} MB) - {{ t.error_security_type }} ❌`;
+                        fileName.style.display = 'block';
+                        fileName.style.color = 'red';
+                        fileUploadArea.style.borderColor = '#dc3545'; // Red border
+                        fileUploadArea.style.backgroundColor = '#ffe6e6'; // Light red bg
+                        uploadBtn.disabled = true;
+                        uploadBtn.style.opacity = '0.6';
+                        uploadBtn.style.cursor = 'not-allowed';
+                    } else {
+                        fileName.textContent = `${name} (${size} MB) ✅`;
+                        fileName.style.display = 'block';
+                        fileName.style.color = 'green';
+                        fileUploadArea.style.borderColor = '#28a745';
+                        fileUploadArea.style.backgroundColor = '#e6ffec';
+                        updateButtonText(name);
+                    }
+                } else {
+                    fileUploadArea.style.borderColor = '#007bff';
+                    fileUploadArea.style.backgroundColor = '#f0f8ff';
+                }
+            });
+
+            // Initialize button state
+            updateButtonText(null);
+
+            // Form Submit / Progress Bar
+            const form = document.getElementById('upload-form');
+            const progressWrapper = document.getElementById('progress-wrapper');
+            const progressBar = document.getElementById('progress-bar');
+            const progressStatus = document.getElementById('progress-status');
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const file = fileInput.files[0];
+                if (!file) return;
+
+                // Disable button
+                uploadBtn.disabled = true;
+                uploadBtn.style.opacity = '0.6';
+                uploadBtn.style.cursor = 'wait';
+
+                // Show progress
+                progressWrapper.style.display = 'block';
+                progressBar.style.width = '0%';
+                progressStatus.textContent = '0%';
+
+                const formData = new FormData();
+                formData.append('file', file);
+
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', form.action, true);
+
+                xhr.upload.onprogress = function (e) {
+                    if (e.lengthComputable) {
+                        const percentComplete = Math.round((e.loaded / e.total) * 100);
+                        progressBar.style.width = percentComplete + '%';
+                        progressStatus.textContent = percentComplete + '%';
+                    }
+                };
+
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        if (xhr.responseURL && xhr.responseURL !== window.location.href) {
+                            window.location.href = xhr.responseURL;
+                        } else {
+                            window.location.href = xhr.responseURL;
+                        }
+                    } else if (xhr.status === 403) {
+                        // Security Error
+                        progressStatus.textContent = '{{ t.error_security_type }}';
+                        progressStatus.style.color = 'red';
+                        uploadBtn.disabled = false;
+                        uploadBtn.style.opacity = '1';
+                        uploadBtn.style.cursor = 'pointer';
+                    } else {
+                        // General Error
+                        progressStatus.textContent = '{{ t.error_upload_failed }}';
+                        progressStatus.style.color = 'red';
+                        uploadBtn.disabled = false;
+                        uploadBtn.style.opacity = '1';
+                        uploadBtn.style.cursor = 'pointer';
+                    }
+                };
+
+                xhr.onerror = function () {
+                    progressStatus.textContent = (lang === 'fa' ? 'خطا در اتصال.' : (lang === 'sv' ? 'Anslutningsfel.' : 'Connection error.'));
+                    progressStatus.style.color = 'red';
+                    uploadBtn.disabled = false;
+                    uploadBtn.style.opacity = '1';
+                    uploadBtn.style.cursor = 'pointer';
+                };
+
+                xhr.send(formData);
+            });
+
+        })();
+
+        // Download button functionality
+        (function () {
+            const fileLinkInput = document.getElementById('file-link-input');
+            const downloadBtn = document.getElementById('download-btn');
+            const lang = '{{ lang or "fa" }}';
+
+            function updateDownloadButton() {
+                const linkValue = fileLinkInput.value.trim();
+                if (linkValue) {
+                    downloadBtn.textContent = '{{ t.js_download_btn_ready }}';
+                    downloadBtn.disabled = false;
+                    downloadBtn.style.opacity = '1';
+                    downloadBtn.style.cursor = 'pointer';
+                } else {
+                    downloadBtn.textContent = '{{ t.js_download_btn_default }}';
+                    downloadBtn.disabled = true;
+                    downloadBtn.style.opacity = '0.6';
+                    downloadBtn.style.cursor = 'not-allowed';
+                }
+            }
+
+            fileLinkInput.addEventListener('input', updateDownloadButton);
+            fileLinkInput.addEventListener('paste', function () {
+                setTimeout(updateDownloadButton, 10);
+            });
+
+            // Initialize button state
+            updateDownloadButton();
+        })();
+    </script>
+
+    <script src="/static/bg.js"></script>
+</body>
+
+</html>
