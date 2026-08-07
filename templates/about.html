@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% if lang == 'en' %}About DropLab{% elif lang == 'sv' %}Om DropLab{% else %}درباره DropLab{% endif %}
     </title>
     <link rel="stylesheet" href="/static/style.css">
@@ -91,6 +92,10 @@
         <nav class="navbar">
             <div class="nav-container">
                 <a href="{{ url_for('home', lang=lang) }}" class="logo">{{ t.hero_title }}</a>
+                <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-label="Toggle navigation">
+                <label for="nav-toggle" class="nav-hamburger" aria-label="Toggle navigation">
+                    <span></span><span></span><span></span>
+                </label>
                 <div class="nav-links">
                     <a href="{{ url_for('home', lang=lang) }}">{{ t.nav_home }}</a>
                     <a href="{{ url_for('about', lang=lang) }}" style="color: var(--primary-color);">{{ t.nav_about
