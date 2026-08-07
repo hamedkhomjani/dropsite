@@ -5,7 +5,7 @@ import time
 import uuid
 
 app = Flask(__name__)
-app.secret_key = "change-this-secret-key"
+app.secret_key = os.environ.get('SECRET_KEY', 'change-this-secret-key')
 
 UPLOAD_FOLDER = 'uploads'
 MAX_AGE = 3 * 24 * 60 * 60  # 3 روز به ثانیه

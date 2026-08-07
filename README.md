@@ -14,7 +14,7 @@ DropLab is a secure and simple file sharing platform designed for quick, hassle-
 
 1.  Clone the repository:
     ```bash
-    git clone https://github.com/yourusername/dropsite.git
+    git clone https://github.com/hamedkhomjani/dropsite.git
     cd dropsite
     ```
 
