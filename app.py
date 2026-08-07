@@ -110,7 +110,7 @@ def upload():
     cleanup_uploads()
     # حفظ زبان جاری کاربر
     get_lang()
-    file = request.files['file']
+    file = request.files.get('file')
 
     if not file or file.filename == '':
         return "No file selected", 400

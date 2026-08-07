@@ -68,54 +68,56 @@
             <p class="animate-fade-in animate-delay-1">{{ t.hero_subtitle }} <span
                     style="color:red; font-weight:bold;">{{ t.free }}</span></p>
 
-            <form id="upload-form" action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data"
-                class="animate-fade-in animate-delay-2">
-                <div class="file-upload-area" id="file-upload-area">
-                    <input type="file" name="file" id="file-input" required style="display: none;">
-                    <div class="upload-content">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" style="margin-bottom: 10px;">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                            <polyline points="17 8 12 3 7 8"></polyline>
-                            <line x1="12" y1="3" x2="12" y2="15"></line>
-                        </svg>
-                        <p id="upload-text">
-                            <strong>{{ t.upload_click }}</strong> {{ t.upload_drag }}
-                        </p>
-                        <p id="file-name" style="display: none; margin-top: 8px; color: #007bff; font-weight: bold;">
-                        </p>
-                    </div>
+            <div class="split-grid animate-fade-in animate-delay-1">
+                <div class="col upload-column">
+                    <h3 class="col-title">{{ t.btn_upload }}</h3>
+                    <form id="upload-form" action="{{ url_for('upload') }}" method="post"
+                        enctype="multipart/form-data">
+                        <div class="file-upload-area" id="file-upload-area">
+                            <input type="file" name="file" id="file-input" required style="display: none;">
+                            <div class="upload-content">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" style="margin-bottom: 10px;">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                                <p id="upload-text">
+                                    <strong>{{ t.upload_click }}</strong> {{ t.upload_drag }}
+                                </p>
+                                <p id="file-name"
+                                    style="display: none; margin-top: 8px; color: #007bff; font-weight: bold;">
+                                </p>
+                            </div>
+                        </div>
+                        <button type="submit" id="upload-btn" style="margin-top: 15px; width: 100%;" disabled>
+                            {{ t.btn_select }}
+                        </button>
+
+                        <div id="progress-wrapper" class="progress-wrapper">
+                            <div class="progress-container">
+                                <div class="progress-bar" id="progress-bar"></div>
+                            </div>
+                            <div class="progress-status" id="progress-status">0%</div>
+                        </div>
+                    </form>
                 </div>
-                <button type="submit" id="upload-btn" style="margin-top: 15px; width: 100%;" disabled>
-                    {{ t.btn_select }}
-                </button>
 
-                <div id="progress-wrapper" class="progress-wrapper">
-                    <div class="progress-container">
-                        <div class="progress-bar" id="progress-bar"></div>
-                    </div>
-                    <div class="progress-status" id="progress-status">0%</div>
+                <div class="col download-column">
+                    <h3 class="col-title">{{ t.download_head }}</h3>
+                    <p>{{ t.download_desc }}</p>
+
+                    <form id="download-form" action="{{ url_for('download_manual') }}" method="post">
+                        <input type="text" name="file_link" id="file-link-input" placeholder="{{ t.placeholder_link }}"
+                            required>
+                        <button type="submit" id="download-btn" disabled>
+                            {{ t.btn_enter_link }}
+                        </button>
+                    </form>
+
+                    <div id="manual-download" style="display:none; margin-top:15px;"></div>
                 </div>
-            </form>
-
-            <hr style="margin:20px 0;">
-
-            <div class="animate-fade-in animate-delay-3">
-                <h3>{{ t.download_head }}</h3>
-                <p>{{ t.download_desc }}</p>
-
-                <form id="download-form" action="{{ url_for('download_manual') }}" method="post">
-                    <input type="text" name="file_link" id="file-link-input" placeholder="{{ t.placeholder_link }}"
-                        required style="width:80%">
-                    <button type="submit" id="download-btn" disabled>
-                        {{ t.btn_enter_link }}
-                    </button>
-                </form>
             </div>
-
-            <div id="manual-download" style="display:none; margin-top:15px;"></div>
-
-            <hr style="margin:20px 0;">
 
         </div>
     </div>

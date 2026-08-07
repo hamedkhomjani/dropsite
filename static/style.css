@@ -375,9 +375,8 @@ button,
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     color: var(--text-color);
-    width: 450px;
-    /* Smaller width */
-    max-width: 90%;
+    width: 820px;
+    max-width: 92%;
     padding: 30px;
     /* Restored padding slightly */
     border: 1px solid var(--border-color);
@@ -413,6 +412,62 @@ button,
     height: 20px;
     border-bottom: 4px solid var(--primary-color);
     border-right: 4px solid var(--primary-color);
+}
+
+/* Split layout: side-by-side on wide screens, stacked on mobile */
+.split-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: start;
+    text-align: left;
+    margin-top: 15px;
+}
+
+.split-grid .col {
+    min-width: 0;
+}
+
+.col-title {
+    font-family: 'Chakra Petch', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0 0 10px;
+    font-size: 14px;
+    color: var(--primary-color);
+    text-align: left;
+}
+
+.upload-column {
+    border-right: 1px solid var(--border-color);
+    padding-right: 24px;
+}
+
+.download-column {
+    align-self: center;
+}
+
+@media (max-width: 700px) {
+    .split-grid {
+        grid-template-columns: 1fr;
+        gap: 22px;
+        text-align: center;
+    }
+
+    .col-title {
+        text-align: center;
+    }
+
+    .upload-column {
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        padding-right: 0;
+        padding-bottom: 22px;
+    }
+
+    .download-column {
+        align-self: stretch;
+    }
 }
 
 h1 {
