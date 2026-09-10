@@ -1,5 +1,6 @@
 from flask import Flask, request, send_from_directory, redirect, render_template, session, url_for
 from werkzeug.utils import secure_filename
+import json
 import os
 import time
 import uuid
@@ -8,12 +9,65 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'change-this-secret-key')
 
 UPLOAD_FOLDER = 'uploads'
+METADATA_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'file_links.json')
 MAX_AGE = 3 * 24 * 60 * 60  # 3 روز به ثانیه
-UPLOAD_DURATION = MAX_AGE
 MAX_FILE_SIZE = 500 * 1024 * 1024  # 500 MB
 
 temporary_links = {}  # file_id : filename
 file_timestamps = {}  # file_id : timestamp
+
+
+def load_metadata():
+    """Restores file metadata from disk after a restart."""
+    if os.path.exists(METADATA_FILE):
+        try:
+            with open(METADATA_FILE, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            for file_id, info in data.items():
+                temporary_links[file_id] = info.get('filename', '')
+                file_timestamps[file_id] = info.get('uploaded_at', time.time())
+        except (OSError, ValueError):
+            pass
+
+
+def save_metadata():
+    """Persists file metadata to disk so links survive restarts."""
+    data = {}
+    for file_id, filename in temporary_links.items():
+        data[file_id] = {
+            'filename': filename,
+            'uploaded_at': file_timestamps.get(file_id, time.time()),
+        }
+    try:
+        with open(METADATA_FILE, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+    except OSError:
+        pass
+
+
+def format_size(num_bytes):
+    """Formats a byte count into a human-readable size string."""
+    value = float(num_bytes)
+    for unit in ('B', 'KB', 'MB', 'GB'):
+        if value < 1024.0 or unit == 'GB':
+            if unit == 'B':
+                return f"{int(value)} {unit}"
+            return f"{value:.1f} {unit}"
+        value /= 1024.0
+    return f"{value:.1f} TB"
+
+
+def get_original_filename(filename):
+    """Strips the internal __uuid suffix to get the original user filename."""
+    base, ext = os.path.splitext(filename)
+    if "__" in base:
+        parts = base.split("__")
+        if len(parts) >= 2:
+            return "__".join(parts[:-1]) + ext
+    return filename
+
+
+load_metadata()
 
 # لیست پسوندهای غیرمجاز (فایل‌های اجرایی و خطرناک)
 FORBIDDEN_EXTENSIONS = {'exe', 'bat', 'cmd', 'sh', 'vbs', 'ps1', 'msi', 'jar', 'scr', 'com', 'pif'}
@@ -83,6 +137,15 @@ def cleanup_uploads():
                 except Exception as e:
                     print(f"Error cleaning up {filename}: {e}")
 
+    # Drop metadata for files that no longer exist on disk
+    missing = [k for k, v in temporary_links.items()
+               if not os.path.exists(os.path.join(UPLOAD_FOLDER, v))]
+    for k in missing:
+        temporary_links.pop(k, None)
+        file_timestamps.pop(k, None)
+
+    save_metadata()
+
 from translations import TRANSLATIONS
 
 @app.route('/')
@@ -137,6 +200,7 @@ def upload():
 
     temporary_links[file_id] = filename
     file_timestamps[file_id] = time.time()
+    save_metadata()
 
     return redirect(f"/success/{file_id}")
 
@@ -156,13 +220,17 @@ def success(file_id):
                 file_timestamps[file_id] = time.time() # fallback
     
     filename = temporary_links.get(file_id)
-    if not filename:
+    file_path = os.path.join(UPLOAD_FOLDER, filename) if filename else None
+    if not filename or not os.path.exists(file_path):
+        temporary_links.pop(file_id, None)
+        file_timestamps.pop(file_id, None)
+        save_metadata()
         return redirect(url_for('home', lang=lang))
         
     upload_time = file_timestamps.get(file_id, time.time())
 
     now = time.time()
-    time_left = max(0, int(UPLOAD_DURATION - (now - upload_time)))
+    time_left = max(0, int(MAX_AGE - (now - upload_time)))
     days = time_left // (24*3600)
     hours = (time_left % (24*3600)) // 3600
     minutes = (time_left % 3600) // 60
@@ -171,25 +239,18 @@ def success(file_id):
     link = url_for('download', filename=filename, _external=True)
 
     return render_template('success.html', link=link,
+                           file_id=file_id,
+                           file_name=get_original_filename(filename),
+                           file_size=format_size(os.path.getsize(file_path)),
                            days=days, hours=hours, minutes=minutes, seconds=seconds,
                            lang=lang, t=TRANSLATIONS[lang])
 
 @app.route('/files/<path:filename>')
 def download(filename):
-    # Default download name
-    download_name = filename
-    
-    # Try to extract the original name from our format: name__uuid.ext
-    base, ext = os.path.splitext(filename)
-    if "__" in base:
-        parts = base.split("__")
-        # Reconstruct the original name (everything before the last __)
-        if len(parts) >= 2:
-            original_part = "__".join(parts[:-1]) # everything except the UUID
-            download_name = original_part + ext
+    # Reconstruct the original name from our format: name__uuid.ext
+    download_name = get_original_filename(filename)
 
-    # Add app name as requested: "Drop3_OriginalName.ext"
-    # Logic: If we found a clean name, prefix it. If not, prefix the raw filename.
+    # Add app name as requested: "DropLab_OriginalName.ext"
     if not download_name.startswith("DropLab_"):
         download_name = f"DropLab_{download_name}"
             
@@ -217,7 +278,23 @@ def download_manual():
         file_path = os.path.join(UPLOAD_FOLDER, filename)
         if os.path.exists(file_path):
             download_url = url_for('download', filename=filename)
-            return render_template('download_manual.html', download_url=download_url, lang=lang, t=TRANSLATIONS[lang])
+            upload_time = None
+            for fid, fname in temporary_links.items():
+                if fname == filename:
+                    upload_time = file_timestamps.get(fid, time.time())
+                    break
+            if upload_time is None:
+                upload_time = os.path.getctime(file_path)
+            time_left = max(0, int(MAX_AGE - (time.time() - upload_time)))
+            days = time_left // (24*3600)
+            hours = (time_left % (24*3600)) // 3600
+            minutes = (time_left % 3600) // 60
+            seconds = time_left % 60
+            return render_template('download_manual.html', download_url=download_url,
+                                   file_name=get_original_filename(filename),
+                                   file_size=format_size(os.path.getsize(file_path)),
+                                   days=days, hours=hours, minutes=minutes, seconds=seconds,
+                                   lang=lang, t=TRANSLATIONS[lang])
         else:
             error_msg = TRANSLATIONS.get(lang, TRANSLATIONS['fa']).get('error_file_not_found', 'File not found')
             return render_template('download_manual.html', error=error_msg, lang=lang, t=TRANSLATIONS[lang])
@@ -227,7 +304,21 @@ def download_manual():
         return render_template('download_manual.html', error=error_msg, lang=lang, t=TRANSLATIONS[lang])
 
 
+@app.route('/delete/<file_id>', methods=['POST'])
+def delete_file(file_id):
+    filename = temporary_links.get(file_id) or find_file_by_id(file_id)
+    if filename:
+        try:
+            os.remove(os.path.join(UPLOAD_FOLDER, filename))
+        except (OSError, IOError):
+            pass
+    temporary_links.pop(file_id, None)
+    file_timestamps.pop(file_id, None)
+    save_metadata()
+    return redirect(url_for('home', lang=get_lang()))
+
+
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=os.environ.get('FLASK_DEBUG') == '1')
 

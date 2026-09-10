@@ -66,6 +66,8 @@
             {% if download_url %}
             <h1>{{ t.download_ready }}</h1>
             <p>{{ t.download_click }}</p>
+            <p>{{ t.download_file_info }} <strong>{{ file_name }}</strong> ({{ file_size }})</p>
+            <p>{{ t.download_time_left }} {{ days }} {{ t.time_days }} {{ hours }}:{{ minutes }}:{{ seconds }}</p>
             <a href="{{ download_url }}" download><button>{{ t.btn_download }}</button></a>
             <br><br>
             <a href="{{ url_for('home', lang=lang) }}">{{ t.back_home }}</a>

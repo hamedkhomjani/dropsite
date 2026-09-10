@@ -64,6 +64,7 @@
 
         <div class="card">
             <h1>{{ t.success_ready }}</h1>
+            <p>{{ t.success_file_info }} <strong>{{ file_name }}</strong> ({{ file_size }})</p>
             <p>{{ t.success_time }}
                 <span id="timer" data-days="{{ days }}" data-hours="{{ hours }}" data-minutes="{{ minutes }}"
                     data-seconds="{{ seconds }}">
@@ -84,10 +85,17 @@
                 </button>
             </div>
 
+            <p style="margin-top: 20px;">{{ t.success_link_qr }}</p>
+            <div id="qrcode" style="display: flex; justify-content: center; margin: 10px 0;"></div>
+
             <div style="margin-top: 20px;">
                 <a href="{{ url_for('home', lang=lang) }}">
                     <button style="background-color: var(--text-color); width: 100%;">{{ t.btn_send_another }}</button>
                 </a>
+                <form method="POST" action="{{ url_for('delete_file', file_id=file_id) }}"
+                    onsubmit="return confirm('{{ t.alert_delete_confirm }}');" style="margin-top: 12px;">
+                    <button type="submit" style="background-color: #dc3545; color: #fff; width: 100%;">{{ t.btn_delete }}</button>
+                </form>
             </div>
         </div>
     </div>
@@ -184,6 +192,18 @@
                     alert("{{ t.alert_share_fail }}");
                 }
             };
+        })();
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        (function () {
+            if (window.QRCode) {
+                new QRCode(document.getElementById("qrcode"), {
+                    text: document.getElementById("link").value,
+                    width: 140,
+                    height: 140
+                });
+            }
         })();
     </script>
     <script src="/static/bg.js"></script>

@@ -8,6 +8,7 @@ venv/
 # Runtime artifacts
 *.log
 uploads/
+file_links.json
 
 # Environment
 .env
