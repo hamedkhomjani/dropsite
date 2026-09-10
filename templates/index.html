@@ -179,7 +179,7 @@
                     const forbidden = ['exe', 'bat', 'cmd', 'sh', 'vbs', 'ps1', 'msi', 'jar', 'scr', 'com', 'pif'];
 
                     if (forbidden.includes(ext)) {
-                        fileName.textContent = `${name} (${size} MB) - {{ t.error_security_type }} ❌`;
+                        fileName.textContent = `${name} (${size} MB) - {{ t.error_security_type }}`;
                         fileName.style.display = 'block';
                         fileName.style.color = 'red';
                         fileUploadArea.style.borderColor = '#dc3545'; // Red border
@@ -222,6 +222,35 @@
                 e.preventDefault();
                 fileUploadArea.classList.remove('active');
 
+                // Detect dropped folders (they fail to upload and look like a "connection error")
+                let folderDetected = false;
+                const dtItems = e.dataTransfer.items;
+                if (dtItems && dtItems.length) {
+                    for (let i = 0; i < dtItems.length; i++) {
+                        const getEntry = dtItems[i].webkitGetAsEntry;
+                        if (getEntry) {
+                            const entry = getEntry.call(dtItems[i]);
+                            if (entry && entry.isDirectory) {
+                                folderDetected = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (folderDetected) {
+                    fileName.textContent = '{{ t.error_folder_not_supported }}';
+                    fileName.style.display = 'block';
+                    fileName.style.color = 'red';
+                    fileUploadArea.style.borderColor = '#dc3545'; // Red border
+                    fileUploadArea.style.backgroundColor = '#ffe6e6'; // Light red bg
+                    uploadBtn.disabled = true;
+                    uploadBtn.style.opacity = '0.6';
+                    uploadBtn.style.cursor = 'not-allowed';
+                    fileInput.value = '';
+                    return;
+                }
+
                 if (e.dataTransfer.files && e.dataTransfer.files[0]) {
                     fileInput.files = e.dataTransfer.files;
                     const name = e.dataTransfer.files[0].name;
@@ -230,7 +259,7 @@
                     const forbidden = ['exe', 'bat', 'cmd', 'sh', 'vbs', 'ps1', 'msi', 'jar', 'scr', 'com', 'pif'];
 
                     if (forbidden.includes(ext)) {
-                        fileName.textContent = `${name} (${size} MB) - {{ t.error_security_type }} ❌`;
+                        fileName.textContent = `${name} (${size} MB) - {{ t.error_security_type }}`;
                         fileName.style.display = 'block';
                         fileName.style.color = 'red';
                         fileUploadArea.style.borderColor = '#dc3545'; // Red border
@@ -267,6 +296,16 @@
                 const file = fileInput.files[0];
                 if (!file) return;
 
+                // Client-side size guard before starting the upload
+                const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500 MB
+                if (file.size > MAX_FILE_SIZE) {
+                    progressWrapper.style.display = 'block';
+                    progressBar.style.width = '0%';
+                    progressStatus.textContent = '{{ t.error_file_too_large }}';
+                    progressStatus.style.color = 'red';
+                    return;
+                }
+
                 // Disable button
                 uploadBtn.disabled = true;
                 uploadBtn.style.opacity = '0.6';
@@ -280,11 +319,16 @@
                 const formData = new FormData();
                 formData.append('file', file);
 
+                // Track whether any bytes actually reached the server
+                // (used to give a better message if the connection drops mid-upload)
+                let bytesSent = 0;
+
                 const xhr = new XMLHttpRequest();
                 xhr.open('POST', form.action, true);
 
                 xhr.upload.onprogress = function (e) {
                     if (e.lengthComputable) {
+                        bytesSent = e.loaded;
                         const percentComplete = Math.round((e.loaded / e.total) * 100);
                         progressBar.style.width = percentComplete + '%';
                         progressStatus.textContent = percentComplete + '%';
@@ -293,11 +337,15 @@
 
                 xhr.onload = function () {
                     if (xhr.status === 200) {
-                        if (xhr.responseURL && xhr.responseURL !== window.location.href) {
-                            window.location.href = xhr.responseURL;
-                        } else {
-                            window.location.href = xhr.responseURL;
-                        }
+                        window.location.href = xhr.responseURL;
+                    } else if (xhr.status === 413) {
+                        // File too large
+                        progressStatus.textContent = '{{ t.error_file_too_large }}';
+                        progressStatus.style.color = 'red';
+                        progressBar.style.width = '0%';
+                        uploadBtn.disabled = false;
+                        uploadBtn.style.opacity = '1';
+                        uploadBtn.style.cursor = 'pointer';
                     } else if (xhr.status === 403) {
                         // Security Error
                         progressStatus.textContent = '{{ t.error_security_type }}';
@@ -316,7 +364,13 @@
                 };
 
                 xhr.onerror = function () {
-                    progressStatus.textContent = (lang === 'fa' ? 'خطا در اتصال.' : (lang === 'sv' ? 'Anslutningsfel.' : 'Connection error.'));
+                    if (bytesSent > 0) {
+                        // The connection dropped part-way through the upload
+                        progressStatus.textContent = '{{ t.error_connection_interrupted }}';
+                    } else {
+                        // Nothing got through at all
+                        progressStatus.textContent = '{{ t.error_connection }}';
+                    }
                     progressStatus.style.color = 'red';
                     uploadBtn.disabled = false;
                     uploadBtn.style.opacity = '1';

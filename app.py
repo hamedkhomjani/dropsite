@@ -10,6 +10,7 @@ app.secret_key = os.environ.get('SECRET_KEY', 'change-this-secret-key')
 UPLOAD_FOLDER = 'uploads'
 MAX_AGE = 3 * 24 * 60 * 60  # 3 روز به ثانیه
 UPLOAD_DURATION = MAX_AGE
+MAX_FILE_SIZE = 500 * 1024 * 1024  # 500 MB
 
 temporary_links = {}  # file_id : filename
 file_timestamps = {}  # file_id : timestamp
@@ -114,6 +115,9 @@ def upload():
 
     if not file or file.filename == '':
         return "No file selected", 400
+
+    if request.content_length and request.content_length > MAX_FILE_SIZE:
+        return "File too large", 413
 
     if not is_allowed_file(file.filename):
         return "File type not allowed (Security Restriction)", 403
