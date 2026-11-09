@@ -1,0 +1,15 @@
+{
+  "name": "droplab",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@netlify/blobs": "^11.1.8",
+    "nunjucks": "^3.2.4"
+  },
+  "devDependencies": {
+    "@netlify/functions": "^6.1.1",
+    "@types/node": "^26.6.6",
+    "@types/nunjucks": "^3.2.6",
+    "typescript": "^7.0.2"
+  }
+}
