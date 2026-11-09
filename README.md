@@ -10,34 +10,23 @@ DropLab is a secure and simple file sharing platform designed for quick, hassle-
 - **Multi-language Support**: Available in English, Swedish, and Persian (Farsi).
 - **Responsive Design**: Modern, tech-inspired UI that works on all devices.
 
-## Installation
+## Running locally
 
-1.  Clone the repository:
+DropLab runs on Netlify: pages are rendered by a Netlify Function, uploaded files are stored in Netlify Blobs, and a scheduled function deletes files older than 3 days.
+
+1.  Clone the repository and install dependencies:
     ```bash
     git clone https://github.com/hamedkhomjani/dropsite.git
     cd dropsite
+    npm install
     ```
 
-2.  Create a virtual environment (optional but recommended):
+2.  Start the local Netlify environment:
     ```bash
-    python -m venv .venv
-    # Windows
-    .venv\Scripts\activate
-    # macOS/Linux
-    source .venv/bin/activate
+    npx netlify dev
     ```
 
-3.  Install dependencies:
-    ```bash
-    pip install flask
-    ```
-
-4.  Run the application:
-    ```bash
-    python app.py
-    ```
-
-5.  Open your browser and navigate to `http://localhost:5000`.
+Uploads are limited to 5 MB per file (Netlify Functions accept request bodies of about 6 MB).
 
 ## Usage
 
@@ -47,7 +36,8 @@ DropLab is a secure and simple file sharing platform designed for quick, hassle-
 
 ## Technologies
 
-- **Backend**: Python (Flask)
+- **Backend**: Netlify Functions (TypeScript) with Nunjucks templates
+- **Storage**: Netlify Blobs
 - **Frontend**: HTML5, CSS3, JavaScript
 - **Styling**: Custom CSS with a cyberpunk aesthetic
 

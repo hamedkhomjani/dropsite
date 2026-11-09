@@ -1,0 +1,10 @@
+[build]
+  publish = "public"
+
+[functions]
+  directory = "netlify/functions"
+  # Nunjucks has optional runtime requires, so ship it as a regular node module
+  external_node_modules = ["nunjucks"]
+
+[functions.app]
+  included_files = ["templates/**"]
