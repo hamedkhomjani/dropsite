@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ lang or 'fa' }}">
+<html lang="{{ lang or 'sv' }}">
 
 <head>
     <meta charset="UTF-8">
@@ -53,9 +53,9 @@
                             ▼
                         </button>
                         <div class="dropdown-content">
-                            <a href="{{ url_for('success', file_id=file_id, lang='fa') }}">{{ t.lang_fa }}</a>
-                            <a href="{{ url_for('success', file_id=file_id, lang='en') }}">{{ t.lang_en }}</a>
                             <a href="{{ url_for('success', file_id=file_id, lang='sv') }}">{{ t.lang_sv }}</a>
+                            <a href="{{ url_for('success', file_id=file_id, lang='en') }}">{{ t.lang_en }}</a>
+                            <a href="{{ url_for('success', file_id=file_id, lang='fa') }}">{{ t.lang_fa }}</a>
                         </div>
                     </div>
                 </div>
@@ -127,7 +127,7 @@
             var minutes = parseInt(timerEl.dataset.minutes, 10);
             var hours = parseInt(timerEl.dataset.hours, 10);
             var days = parseInt(timerEl.dataset.days, 10);
-            var lang = '{{ lang or "fa" }}';
+            var lang = '{{ lang or "sv" }}';
 
             function pad(n) { return n < 10 ? '0' + n : n; }
 

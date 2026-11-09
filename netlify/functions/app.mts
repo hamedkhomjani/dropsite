@@ -19,7 +19,7 @@ import {
 } from '../lib/files.mts'
 
 type Lang = 'fa' | 'en' | 'sv'
-const LANGS: Lang[] = ['fa', 'en', 'sv']
+const LANGS: Lang[] = ['sv', 'en', 'fa']
 const T = translations as Record<Lang, Record<string, string>>
 
 // Executable / script file types are rejected for security.
@@ -81,7 +81,7 @@ function redirect(location: string) {
   return new Response(null, { status: 303, headers: { Location: location } })
 }
 
-/** Active language from ?lang= (remembered in a cookie) or the cookie, defaulting to Persian. */
+/** Active language from ?lang= (remembered in a cookie) or the cookie, defaulting to Swedish. */
 function getLang(url: URL, context: Context): Lang {
   const fromQuery = url.searchParams.get('lang') as Lang | null
   if (fromQuery && LANGS.includes(fromQuery)) {
@@ -89,7 +89,7 @@ function getLang(url: URL, context: Context): Lang {
     return fromQuery
   }
   const fromCookie = context.cookies.get('lang') as Lang | undefined
-  return fromCookie && LANGS.includes(fromCookie) ? fromCookie : 'fa'
+  return fromCookie && LANGS.includes(fromCookie) ? fromCookie : 'sv'
 }
 
 function fileVars(meta: FileMeta) {

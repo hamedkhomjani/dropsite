@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ lang or 'fa' }}">
+<html lang="{{ lang or 'sv' }}">
 
 <head>
     <meta charset="UTF-8">
@@ -133,9 +133,9 @@
                             ▼
                         </button>
                         <div class="dropdown-content">
-                            <a href="{{ url_for('privacy', lang='fa') }}">{{ t.lang_fa }}</a>
-                            <a href="{{ url_for('privacy', lang='en') }}">{{ t.lang_en }}</a>
                             <a href="{{ url_for('privacy', lang='sv') }}">{{ t.lang_sv }}</a>
+                            <a href="{{ url_for('privacy', lang='en') }}">{{ t.lang_en }}</a>
+                            <a href="{{ url_for('privacy', lang='fa') }}">{{ t.lang_fa }}</a>
                         </div>
                     </div>
                 </div>

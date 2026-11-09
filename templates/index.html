@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ lang or 'fa' }}">
+<html lang="{{ lang or 'sv' }}">
 
 <head>
     <meta charset="UTF-8">
@@ -54,9 +54,9 @@
                             ▼
                         </button>
                         <div class="dropdown-content">
-                            <a href="{{ url_for('home', lang='fa') }}">{{ t.lang_fa }}</a>
-                            <a href="{{ url_for('home', lang='en') }}">{{ t.lang_en }}</a>
                             <a href="{{ url_for('home', lang='sv') }}">{{ t.lang_sv }}</a>
+                            <a href="{{ url_for('home', lang='en') }}">{{ t.lang_en }}</a>
+                            <a href="{{ url_for('home', lang='fa') }}">{{ t.lang_fa }}</a>
                         </div>
                     </div>
                 </div>
@@ -149,7 +149,7 @@
             const uploadText = document.getElementById('upload-text');
             const fileName = document.getElementById('file-name');
             const uploadBtn = document.getElementById('upload-btn');
-            const lang = '{{ lang or "fa" }}';
+            const lang = '{{ lang or "sv" }}';
 
             function updateButtonText(fileName) {
                 if (fileName) {
@@ -386,7 +386,7 @@
         (function () {
             const fileLinkInput = document.getElementById('file-link-input');
             const downloadBtn = document.getElementById('download-btn');
-            const lang = '{{ lang or "fa" }}';
+            const lang = '{{ lang or "sv" }}';
 
             function updateDownloadButton() {
                 const linkValue = fileLinkInput.value.trim();
