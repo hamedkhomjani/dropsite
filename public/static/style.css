@@ -434,8 +434,9 @@ button,
     letter-spacing: 1px;
     margin: 0 0 10px;
     font-size: 14px;
+    line-height: 1.4;
     color: var(--primary-color);
-    text-align: left;
+    text-align: start;
 }
 
 .upload-column {
@@ -444,7 +445,7 @@ button,
 }
 
 .download-column {
-    align-self: center;
+    align-self: start;
 }
 
 @media (max-width: 700px) {
